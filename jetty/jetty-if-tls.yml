@@ -34,9 +34,13 @@ fetch:
   - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
   - uri: https://s3.amazonaws.com/mbgl-universe/setup-jks.sh
     executable: true
+  - uri: https://downloads.dcos.io/binaries/cli/linux/x86-64/dcos-1.11/dcos
+    executable: true
+  - uri: https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+    executable: true
 cmd: |
   env | sort
-  cd $MESOS_SANDBOX && ./setup-jks.sh && cd $JETTY_BASE
+  cd $MESOS_SANDBOX && mv jq-linux64 jq && ./setup-jks.sh && cd $JETTY_BASE
   java -jar ${JETTY_HOME}/start.jar --add-to-startd=ssl,https
   mv $MESOS_SANDBOX/keystore.jks etc/
   mv $MESOS_SANDBOX/truststore.jks etc/
