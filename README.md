@@ -17,12 +17,12 @@ $ yml2json <marathon>.yml | dcos marathon app add
 
 ## jetty
 
-* [using fetch for jdk, jetty, and war](jetty/jetty-f.json)
-* [using jetty docker image, and fetch for war](jetty/jetty-if.json)
-* [with tls](jetty/jetty-if-tls.json)
+* [using fetch for jdk, jetty, and war](jetty/jetty-f.yml)
+* [using jetty docker image, and fetch for war](jetty/jetty-if.yml)
+* [with tls](jetty/jetty-if-tls.yml)
 
 
 ## open liberty
 
-* [using jetty docker image, and fetch for war](liberty/libberty-if.json)
+* [using jetty docker image, and fetch for war](liberty/liberty-if.yml)
 
