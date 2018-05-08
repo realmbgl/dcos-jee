@@ -19,6 +19,7 @@ fetch:
   - uri: http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.9.v20180320/jetty-distribution-9.4.9.v20180320.tar.gz
   - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
 cmd: |
+  env | sort
   export JAVA_HOME=$MESOS_SANDBOX/jdk1.8.0_162
   export JAVA=$JAVA_HOME/bin/java
   export JETTY_HOME=$MESOS_SANDBOX/jetty-distribution-9.4.9.v20180320
