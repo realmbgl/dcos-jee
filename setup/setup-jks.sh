@@ -1,13 +1,9 @@
 #!/bin/bash
 set -e
 
-# install prereqs
-curl -O https://downloads.dcos.io/binaries/cli/linux/x86-64/dcos-1.11/dcos && chmod +x dcos
-curl -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 > jq && chmod +x jq
-
 # setup dcos cli
 export LC_ALL=C.UTF-8
-export LANG=C.UTF-
+export LANG=C.UTF-8
 
 # authN with dcos using service account
 cat service_account_secret | ./jq -r .private_key > service_account_key.pem
