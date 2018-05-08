@@ -1,0 +1,50 @@
+id: jetty-pet
+cpus: 1
+mem: 2048
+labels:
+  HAPROXY_GROUP: external
+networks:
+  - mode: container/bridge
+secrets:
+  service-account-secret:
+    source: my-service-acct-secret
+env:
+  SERVICE_ACCOUNT: my-service-acct
+container:
+  type: MESOS
+  docker: 
+    image: jetty:latest
+  portMappings:
+    - containerPort: 8080
+      hostPort: 0
+      protocol: tcp
+      servicePort: 80
+      labels:
+        VIP_0: jetty-pet:80
+    - containerPort: 8443
+      hostPort: 0
+      protocol: tcp
+      servicePort: 443
+      labels:
+        VIP_0: jetty-pet:443
+  volumes: 
+    - containerPath: service_account_secret
+      secret: service-account-secret
+fetch:
+  - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
+  - uri: https://s3.amazonaws.com/mbgl-universe/setup-jks.sh
+    executable: true
+cmd: |
+  env | sort
+  cd $MESOS_SANDBOX && ./setup-jks.sh && cd $JETTY_BASE
+  java -jar ${JETTY_HOME}/start.jar --add-to-startd=ssl,https
+  mv $MESOS_SANDBOX/keystore.jks etc/
+  mv $MESOS_SANDBOX/truststore.jks etc/
+  mv $MESOS_SANDBOX/*war webapps/
+  java -jar ${JETTY_HOME}/start.jar \
+            -Djetty.sslContext.keyStorePath=etc/keystore.jks \
+            -Djetty.sslContext.trustStorePath=etc/truststore.jks \
+            -Djetty.sslContext.keyStorePassword=changeit \
+            -Djetty.sslContext.keyManagerPassword=changeit \
+            -Djetty.sslContext.trustStorePassword=changeit
+  while :; do sleep 1; done

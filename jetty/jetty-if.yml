@@ -1,0 +1,24 @@
+id: jetty-pet
+cpus: 1
+mem: 2048
+labels:
+  HAPROXY_GROUP: external
+networks:
+  - mode: container/bridge
+container:
+  type: MESOS
+  docker: 
+    image: jetty:latest
+  portMappings:
+    - containerPort: 8080
+      hostPort: 0
+      protocol: tcp
+      servicePort: 80
+      labels:
+        VIP_0: jetty-pet:80
+fetch:
+  - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
+cmd: |
+  env | sort
+  cp $MESOS_SANDBOX/*war $JETTY_BASE/webapps/
+  $JETTY_HOME/bin/jetty.sh run 

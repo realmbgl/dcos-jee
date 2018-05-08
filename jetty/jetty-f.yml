@@ -1,0 +1,27 @@
+id: jetty-pet
+cpus: 1
+mem: 2048
+labels:
+  HAPROXY_GROUP: external
+networks:
+  - mode: container/bridge
+container:
+  type: MESOS
+  portMappings:
+    - containerPort: 8080
+      hostPort: 0
+      protocol: tcp
+      servicePort: 80
+      labels:
+        VIP_0: jetty-pet:80
+fetch:
+  - uri: https://downloads.mesosphere.com/java/server-jre-8u162-linux-x64.tar.gz
+  - uri: http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.9.v20180320/jetty-distribution-9.4.9.v20180320.tar.gz
+  - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
+cmd: |
+  export JAVA_HOME=$MESOS_SANDBOX/jdk1.8.0_162
+  export JAVA=$JAVA_HOME/bin/java
+  export JETTY_HOME=$MESOS_SANDBOX/jetty-distribution-9.4.9.v20180320
+  cp *war $JETTY_HOME/webapps/
+  $JETTY_HOME/bin/jetty.sh run 
+

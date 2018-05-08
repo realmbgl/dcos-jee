@@ -1,0 +1,30 @@
+id: liberty-pet
+cpus: 1
+mem: 2048
+labels:
+  HAPROXY_GROUP: external
+networks:
+  - mode: container/bridge
+container:
+  type: MESOS
+  docker: 
+    image: openliberty/open-liberty:webProfile7
+  portMappings:
+    - containerPort: 9080
+      hostPort: 0
+      protocol: tcp
+      servicePort: 80
+      labels:
+        VIP_0: liberty-pet:80
+    - containerPort: 9443
+      hostPort: 0
+      protocol: tcp
+      servicePort: 443
+      labels:
+        VIP_0: liberty-pet:443
+fetch:
+  - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
+cmd: |
+  env | sort
+  cp $MESOS_SANDBOX/*war /config/dropins/
+  /opt/ol/docker/docker-server run defaultServer
