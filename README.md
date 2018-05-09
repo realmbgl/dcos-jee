@@ -22,11 +22,21 @@ git clone https://github.com/realmbgl/dcos-jee.git
 ```
 
 Go to your favorite app server subfolder and run one of the samples using the following command.
+
 ```
 $ yml2json <app-server>.yml | dcos marathon app add
 ```
+**Note:** The TLS samples will only work on DC/OS enterprise. See [here]() for detailed instructions. 
 
-**Note:** The TLS samples will only work on DC/OS enterprise.
+Next launch marathon-lb.
+```
+dcos package install marathon-lb --yes
+```
+
+You now can access the app via the public agents. Go to your browser and enter.
+```
+http://<public-agent-ip>/petclinic
+```
 
 
 ## app server samples
