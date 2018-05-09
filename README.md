@@ -25,4 +25,4 @@ $ yml2json <marathon>.yml | dcos marathon app add
 ## open liberty
 
 * [using liberty docker image, and fetch for war](liberty/liberty-if.yml)
-
+* [with tls](liberty/liberty:wq-if-tls.yml)
