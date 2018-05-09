@@ -1,0 +1,5 @@
+id: shell
+container:
+  type: MESOS
+cmd: |
+  while :; do sleep 1; done
