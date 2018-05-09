@@ -20,5 +20,5 @@ fetch:
   - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
 cmd: |
   env | sort
-  cp $MESOS_SANDBOX/*war $JETTY_BASE/webapps/
-  $JETTY_HOME/bin/jetty.sh run 
+  mv $MESOS_SANDBOX/*war webapps/
+  java -jar ${JETTY_HOME}/start.jar 
