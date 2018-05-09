@@ -66,6 +66,8 @@ dcos package install dcos-enterprise-cli --yes
 
 ### create service account and service acccount secret
 
+Before you can run the samples you need to create a service account and service account secret. This allows the container running your app server to interact with the DC/OS ca and execute certificate signing requests.
+
 ```
 dcos security org service-accounts keypair priv.pem pub.pem
 
