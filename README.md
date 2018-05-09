@@ -107,6 +107,26 @@ Before we can access the app via the browser we need to expose it via edge-lb.
 
 Once you have edge-lb install create a file named lb.yml with the following content.
 ```
+apiVersion: V2
+name: petproxy
+count: 1
+autoCertificate: true
+haproxy:
+  frontends:
+    - bindPort: 443
+      protocol: HTTPS
+      certificates:
+        - $AUTOCERT
+      linkBackend:
+        defaultBackend: petapp
+  backends:
+    - name: petapp
+      protocol: HTTPS
+      services:
+        - endpoint:
+            type: ADDRESS
+            address: jetty-pet.marathon.l4lb.thisdcos.directory
+            port: 443
 ```
 
 Next you install this configuration.
@@ -116,5 +136,5 @@ dcos edgelb create lb.yml
 
 You now can access the app via the public agent. Go to your browser and enter.
 ```
-https://<public-agent-ip>/petclinic/
+https://<public-agent-ip>:443/petclinic/
 ```
