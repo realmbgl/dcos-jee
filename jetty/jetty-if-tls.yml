@@ -51,4 +51,3 @@ cmd: |
             -Djetty.sslContext.keyStorePassword=changeit \
             -Djetty.sslContext.keyManagerPassword=changeit \
             -Djetty.sslContext.trustStorePassword=changeit
-  while :; do sleep 1; done
