@@ -1,0 +1,78 @@
+id: liberty-pet
+cpus: 1
+mem: 2048
+labels:
+  HAPROXY_GROUP: external
+networks:
+  - mode: container/bridge
+secrets:
+  service-account-secret:
+    source: my-service-acct-secret
+env:
+  SERVICE_ACCOUNT: my-service-acct
+container:
+  type: MESOS
+  docker: 
+    image: openliberty/open-liberty:webProfile7
+  portMappings:
+    - containerPort: 9080
+      hostPort: 0
+      protocol: tcp
+      servicePort: 80
+      labels:
+        VIP_0: liberty-pet:80
+    - containerPort: 9443
+      hostPort: 0
+      protocol: tcp
+      servicePort: 443
+      labels:
+        VIP_0: liberty-pet:443
+  volumes: 
+    - containerPath: service_account_secret
+      secret: service-account-secret
+fetch:
+  - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
+  - uri: https://s3.amazonaws.com/mbgl-universe/setup-jks.sh
+    executable: true
+  - uri: https://downloads.dcos.io/binaries/cli/linux/x86-64/dcos-1.11/dcos
+    executable: true
+  - uri: https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+    executable: true
+cmd: |
+  env | sort
+  mv jq-linux64 jq
+  ./setup-jks.sh
+  cp *war /config/dropins/
+
+  cat > /config/server.xml << EOF
+  <server description="new server">
+
+    <!-- Enable features -->
+    <featureManager>
+        <feature>webProfile-7.0</feature>
+    </featureManager>
+
+    <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+    <httpEndpoint id="defaultHttpEndpoint"
+                  host="*"
+                  httpPort="9080"
+                  httpsPort="9443" />
+                  
+    <!-- Automatically expand WAR files and EAR files -->
+    <applicationManager autoExpand="true"/>
+
+    <sslDefault sslRef="defaultSSLSettings" />
+    <ssl id="defaultSSLSettings"
+       keyStoreRef="defaultKeyStore"
+       trustStoreRef="defaultTrustStore" />
+    <keyStore id="defaultKeyStore"
+            location="$MESOS_SANDBOX/keystore.jks"
+            type="JKS" password="changeit" />
+    <keyStore id="defaultTrustStore"
+            location="$MESOS_SANDBOX/truststore.jks"
+            type="JKS" password="changeit" />
+
+  </server>
+  EOF
+
+  /opt/ol/docker/docker-server run defaultServer
