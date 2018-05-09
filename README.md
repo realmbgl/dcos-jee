@@ -6,12 +6,12 @@
 
 Download the yml2json command.
 ```
-$ curl -O https://s3.amazonaws.com/mbgl-universe/yml2json && chmod +x yml2json
+curl -O https://s3.amazonaws.com/mbgl-universe/yml2json && chmod +x yml2json
 ```
 
 Move it to a location that is on your PATH.
 ```
-$ mv yml2json /usr/local/bin
+mv yml2json /usr/local/bin
 ```
 
 ### run the samples
@@ -24,7 +24,7 @@ git clone https://github.com/realmbgl/dcos-jee.git
 Go to your favorite app server subfolder and run one of the samples using the following command.
 
 ```
-$ yml2json <app-server>.yml | dcos marathon app add
+yml2json <app-server>.yml | dcos marathon app add
 ```
 **Note:** The TLS samples will only work on DC/OS enterprise. See [here]() for detailed instructions. 
 
@@ -78,3 +78,28 @@ dcos security secrets create-sa-secret priv.pem my-service-acct my-service-acct-
 dcos security org users grant my-service-acct dcos:superuser full
 ```
 
+### test using curl
+
+Run the shell.yml from the root of the repo.
+```
+yml2json shell.yml | dcos marathon app add
+```
+
+Exec into the container.
+```
+dcos task exec -ti <shell-task-id> bash
+```
+
+Use the following curl command to test the connection. You should see the output as shown
+```
+curl -I --cacert .ssl/ca-bundle.crt https://jetty-pet.marathon.l4lb.thisdcos.directory:443/petclinic/
+
+HTTP/1.1 200 OK
+Content-Language: en
+Content-Type: text/html;charset=utf-8
+Content-Length: 3650
+Server: Jetty(9.4.9.v20180320)
+```
+
+
+```
