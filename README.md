@@ -33,9 +33,9 @@ Next launch marathon-lb.
 dcos package install marathon-lb --yes
 ```
 
-You now can access the app via the public agents. Go to your browser and enter.
+You now can access the app via the public agent. Go to your browser and enter.
 ```
-http://<public-agent-ip>/petclinic
+http://<public-agent-ip>/petclinic/
 ```
 
 
@@ -99,4 +99,22 @@ Content-Language: en
 Content-Type: text/html;charset=utf-8
 Content-Length: 3650
 Server: Jetty(9.4.9.v20180320)
+```
+
+### testing using brower
+
+Before we can access the app via the browser we need to expose it via edge-lb.
+
+Once you have edge-lb install create a file named lb.yml with the following content.
+```
+```
+
+Next you install this configuration.
+```
+dcos edgelb create lb.yml
+```
+
+You now can access the app via the public agent. Go to your browser and enter.
+```
+https://<public-agent-ip>/petclinic/
 ```
