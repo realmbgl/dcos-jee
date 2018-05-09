@@ -54,3 +54,25 @@ All samples install the petclinic.war web application.
 
 * [using liberty docker image, and fetch for war](liberty/liberty-if.yml)
 * [with tls](liberty/liberty-if-tls.yml)
+
+
+
+## running the tls samples
+
+Running the TLS samples requires DC/OS enterprise. Also install the cli additions using the following command.
+```
+dcos package install dcos-enterprise-cli --yes
+```
+
+### create service account and service acccount secret
+
+```
+dcos security org service-accounts keypair priv.pem pub.pem
+
+dcos security org service-accounts create -p pub.pem -d "testing" my-service-acct
+
+dcos security secrets create-sa-secret priv.pem my-service-acct my-service-acct-secret
+
+dcos security org users grant my-service-acct dcos:superuser full
+```
+
