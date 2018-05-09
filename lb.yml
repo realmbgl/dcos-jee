@@ -1,0 +1,20 @@
+apiVersion: V2
+name: petproxy
+count: 1
+autoCertificate: true
+haproxy:
+  frontends:
+    - bindPort: 443
+      protocol: HTTPS
+      certificates:
+        - $AUTOCERT
+      linkBackend:
+        defaultBackend: petapp
+  backends:
+    - name: petapp
+      protocol: HTTPS
+      services:
+        - endpoint:
+            type: ADDRESS
+            address: jetty-pet.marathon.l4lb.thisdcos.directory
+            port: 443
