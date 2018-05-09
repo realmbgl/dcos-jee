@@ -3,7 +3,7 @@
 ## running the samples
 
 ```
-$ curl -L https://gist.githubusercontent.com/realmbgl/95a2b1d33389612b792149ca296fd6bc/raw/6920c4ce9ccd1ad657a701b5c921a26755cbbaa2/yml2json > yml2json
+$ curl -O https://s3.amazonaws.com/mbgl-universe/yml2json
 ```
 
 ```
