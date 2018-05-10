@@ -49,6 +49,9 @@ All samples install the petclinic.war web application.
 * [using jetty docker image, and fetch for war](jetty/jetty-if.yml)
 * [with tls](jetty/jetty-if-tls.yml)
 
+### tomcat
+
+* [using tomcat docker image, and fetch for war](tomcat/tomcat-if.yml)
 
 ### open liberty
 
