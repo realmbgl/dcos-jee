@@ -52,6 +52,7 @@ All samples install the petclinic.war web application.
 ### tomcat
 
 * [using tomcat docker image, and fetch for war](tomcat/tomcat-if.yml)
+* [with tls](tomcat/tomcat-if-tls.yml)
 
 ### open liberty
 
