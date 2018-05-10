@@ -1,0 +1,99 @@
+id: tomcat-pet
+cpus: 1
+mem: 2048
+labels:
+  HAPROXY_GROUP: external
+networks:
+  - mode: container/bridge
+secrets:
+  service-account-secret:
+    source: my-service-acct-secret
+env:
+  SERVICE_ACCOUNT: my-service-acct
+container:
+  type: MESOS
+  docker:
+    image: tomcat:latest
+  portMappings:
+    - containerPort: 8080
+      hostPort: 0
+      protocol: tcp
+      servicePort: 80
+      labels:
+        VIP_0: tomcat-pet:80
+    - containerPort: 8443
+      hostPort: 0
+      protocol: tcp
+      servicePort: 443
+      labels:
+        VIP_0: tomcat-pet:443
+  volumes:
+    - containerPath: service_account_secret
+      secret: service-account-secret
+fetch:
+  - uri: https://s3-us-west-2.amazonaws.com/mesosphere-demo-others/petclinic.war
+  - uri: https://s3.amazonaws.com/mbgl-universe/setup-pem.sh
+    executable: true
+  - uri: https://downloads.dcos.io/binaries/cli/linux/x86-64/dcos-1.11/dcos
+    executable: true
+  - uri: https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+    executable: true
+cmd: |
+  env | sort
+  cd $MESOS_SANDBOX && mv jq-linux64 jq && ./setup-pem.sh && cd /usr/local/tomcat
+  mv $MESOS_SANDBOX/*war webapps/
+
+  cat > conf/server.xml << EOF
+  <?xml version="1.0" encoding="UTF-8"?>
+  <Server port="8005" shutdown="SHUTDOWN">
+    <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+    <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+    <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+    <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+    <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+
+    <GlobalNamingResources>
+      <Resource name="UserDatabase" auth="Container"
+                type="org.apache.catalina.UserDatabase"
+                description="User database that can be updated and saved"
+                factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+                pathname="conf/tomcat-users.xml" />
+    </GlobalNamingResources>
+
+    <Service name="Catalina">
+      <Connector port="8080" protocol="HTTP/1.1"
+                 connectionTimeout="20000"
+                 redirectPort="8443" />
+      <Connector port="8443" protocol="org.apache.coyote.http11.Http11AprProtocol"
+                 maxThreads="150" SSLEnabled="true" >
+          <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
+          <SSLHostConfig>
+              <Certificate certificateKeyFile="$MESOS_SANDBOX/service.key"
+                           certificateFile="$MESOS_SANDBOX/service.crt"
+                           certificateChainFile="$MESOS_SANDBOX/.ssl/ca-bundle.crt"
+                           type="RSA" />
+          </SSLHostConfig>
+      </Connector>
+
+      <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
+
+      <Engine name="Catalina" defaultHost="localhost">
+
+        <Realm className="org.apache.catalina.realm.LockOutRealm">
+          <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+                 resourceName="UserDatabase"/>
+        </Realm>
+
+        <Host name="localhost"  appBase="webapps"
+              unpackWARs="true" autoDeploy="true">
+          <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+                 prefix="localhost_access_log" suffix=".txt"
+                 pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+
+        </Host>
+      </Engine>
+    </Service>
+  </Server>
+  EOF
+
+  catalina.sh run
