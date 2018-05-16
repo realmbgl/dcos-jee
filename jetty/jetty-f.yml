@@ -21,8 +21,6 @@ fetch:
 cmd: |
   env | sort
   export JAVA_HOME=$MESOS_SANDBOX/jdk1.8.0_162
-  export JAVA=$JAVA_HOME/bin/java
-  export JETTY_HOME=$MESOS_SANDBOX/jetty-distribution-9.4.9.v20180320
-  cp *war $JETTY_HOME/webapps/
-  $JETTY_HOME/bin/jetty.sh run 
-
+  cd $MESOS_SANDBOX/jetty-distribution-9.4.9.v20180320
+  mv $MESOS_SANDBOX/*war webapps/
+  $JAVA_HOME/bin/java -jar start.jar
