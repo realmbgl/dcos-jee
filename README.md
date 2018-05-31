@@ -82,6 +82,13 @@ dcos security secrets create-sa-secret priv.pem my-service-acct my-service-acct-
 dcos security org users grant my-service-acct dcos:superuser full
 ```
 
+### launch the tls sample
+
+Launch the app server tls sample. 
+```
+yml2json <app-server-tls>.yml | dcos marathon app add
+```
+
 ### test using curl
 
 Run the shell.yml from the root of the repo.
